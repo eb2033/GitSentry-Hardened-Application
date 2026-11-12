@@ -1,0 +1,10 @@
+title = "GitSentry gitleaks config"
+
+[extend]
+useDefault = true
+
+# Allowlist entries must be justified: every entry needs a comment stating
+# what it matches, why it is not a real secret, and who approved it.
+[allowlist]
+paths = []
+regexes = []

@@ -1,0 +1,7 @@
+.env
+*.pem
+*.key
+*.tfvars
+kubeconfig
+__pycache__
+node_modules
