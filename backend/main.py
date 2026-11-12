@@ -1,7 +1,7 @@
 """Minimal items API. All configuration comes from environment variables."""
 import os
 import sys
-from contextlib import contextmanager
+from contextlib import asynccontextmanager, contextmanager
 
 import psycopg
 from fastapi import FastAPI, HTTPException
@@ -45,12 +45,13 @@ class ItemIn(BaseModel):
     name: str = Field(min_length=1, max_length=200)
 
 
-app = FastAPI(title="GitSentry items API")
-
-
-@app.on_event("startup")
-def startup() -> None:
+@asynccontextmanager
+async def lifespan(_app: FastAPI):
     init_db()
+    yield
+
+
+app = FastAPI(title="GitSentry items API", lifespan=lifespan)
 
 
 @app.get("/health")
