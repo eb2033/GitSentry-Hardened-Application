@@ -2,7 +2,7 @@
 
 Read this file first. It is the short brief; `docs/PLAN.md` holds the full design and is the source of truth when the two disagree.
 
-Last updated: 16 November 2026.
+Last updated: 17 November 2026.
 
 ## The project
 
@@ -50,6 +50,7 @@ Names above are placeholders until the real ones are filled in below.
 - **10 Nov 2026:** five repositories plus the local harness. Terraform and manifests share `fyp-iac`, guarded by pull-request-only `main`, a path check on bot pull requests and an approval gate on `terraform apply`.
 - **15 Nov 2026:** reduced scope. No Prometheus or Grafana, no frontend, baseline never deployed, no nightly destroy workflow, cluster up only for building and the demo. k3s and ArgoCD stay.
 - **16 Nov 2026:** Parameter Store values use Terraform write-only arguments (`value_wo`), and `k3s-node` uses a custom policy instead of `AmazonSSMManagedInstanceCore`. See `docs/sources/wp1-persistent-stack.md`.
+- **17 Nov 2026:** CI triggers include `scenario/**` branches for evaluation runs; `publish` and `promote` stay `main` only. `fyp-iac` workflows follow the plan layout (`terraform.yml`, `manifests.yml`, `pr-paths.yml`) with no session workflow: the session stack is applied and destroyed by hand. `fyp-iac-baseline` CI runs no scanners. Frontend removed from `fyp-app` to match the 15 Nov scope.
 
 ## Status
 

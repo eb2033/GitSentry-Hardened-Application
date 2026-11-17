@@ -1,6 +1,6 @@
 # FYP Implementation Plan: Multi-Layered Shift-Left Secret Leakage Controls for GitOps
 
-Georgy Bodrov (K00299992). Created 10 November 2026, last updated 16 November 2026.
+Georgy Bodrov (K00299992). Created 10 November 2026, last updated 17 November 2026.
 
 This is the canonical plan. `CLAUDE.md` summarises it; the prompts live in `docs/prompts/` and the evidence behind each work package in `docs/sources/`.
 
@@ -48,7 +48,7 @@ A change moves top to bottom: it must pass the hook and push protection, then ev
 | --- | --- | --- |
 | `fyp-app` | Hardened App repo: API, Dockerfiles, hardened workflows, pre-commit config | Hardened CI (seven jobs) |
 | `fyp-app-baseline` | Baseline App repo: same source, one baseline workflow, push protection off | Baseline CI (one job) |
-| `fyp-iac` | Hardened IaC repo: Terraform (`terraform/persistent`, `terraform/session`) and the manifests ArgoCD watches (`k8s/`), with ExternalSecret references only | Checkov and kubeconform on pull requests; Terraform plan and gated apply through OIDC; protected `main` |
+| `fyp-iac` | Hardened IaC repo: Terraform (`terraform/persistent`, `terraform/session`) and the manifests ArgoCD watches (`k8s/`), with ExternalSecret references only | Checkov, kubeconform and zizmor on pull requests; Terraform plan and gated apply through OIDC; protected `main` |
 | `fyp-iac-baseline` | Baseline IaC repo: baseline manifests with a base64 Kubernetes Secret holding a fake value, and Terraform using a static key. Receives commits only; nothing is deployed from it | One job, no scans; Terraform plan only |
 | `fyp-test-action` | The harmless "compromised" action for RQ4 | None |
 | `fyp-eval` (local, not on a pipeline) | Corpus manifest, seeding scripts, tool runners, collector, results | None |
@@ -72,7 +72,7 @@ The promote job can write to `fyp-iac`, which also holds the Terraform. Three se
 Rules that apply to every workflow:
 
 - Top-level `permissions: {}`; each job declares its own.
-- Triggers are `push` to `main` and `pull_request` only. No `pull_request_target`, no `workflow_run`.
+- Triggers are `push` to `main` or to `scenario/**` branches, and `pull_request`. No `pull_request_target`, no `workflow_run`. The `scenario/**` branches carry the harness's seeded cases for integrated runs (RQ3, RQ4); `publish` and `promote` still run only on `main`, so a scenario branch never promotes.
 - `publish` and `promote` run only on `main` and `need` every scan job.
 - Every action is pinned to a full commit SHA. The repository Actions policy and zizmor's unpinned-uses check both enforce it.
 - Checkout uses `persist-credentials: false`, so the token is not left in `.git/config`.
@@ -200,7 +200,7 @@ fyp-eval/                      # local repository, no workflows
 
 ```yaml
 on:
-  push: { branches: [main] }
+  push: { branches: [main, "scenario/**"] }
   pull_request:
 permissions: {}
 jobs:
