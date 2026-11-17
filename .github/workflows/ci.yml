@@ -11,9 +11,9 @@ permissions: {}
 env:
   REGISTRY: ghcr.io
   # TODO: placeholders - fill in
-  INFRA_OWNER: OWNER
-  INFRA_REPO_NAME: INFRA_REPO
-  BACKEND_MANIFEST: path/to/backend/kustomization.yaml
+  INFRA_OWNER: eb2033
+  INFRA_REPO_NAME: GitSentry-hardened-IaC
+  BACKEND_MANIFEST: k8s/apps/overlays/hardened/kustomization.yaml
   BACKEND_YQ_PATH: .images[0].newName
   TRIVY_VERSION: "0.76.2"
   TRIVY_SHA256: bc0fc726e017b8927a62b2d3531d7a84ee01769daf5c99ed866dced54089fdbf
@@ -32,7 +32,7 @@ jobs:
       - name: Install gitleaks (pinned, checksum-verified)
         run: |
           set -euo pipefail
-          V=8.24.2
+          V=8.30.1
           curl -sSfL -o gl.tgz "https://github.com/gitleaks/gitleaks/releases/download/v${V}/gitleaks_${V}_linux_x64.tar.gz"
           curl -sSfL -o gl.sum "https://github.com/gitleaks/gitleaks/releases/download/v${V}/gitleaks_${V}_checksums.txt"
           grep " gitleaks_${V}_linux_x64.tar.gz\$" gl.sum | sed 's/ .*/  gl.tgz/' | sha256sum -c -
